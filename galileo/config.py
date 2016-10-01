@@ -199,7 +199,7 @@ class Argument(StrParameter):
         parser.add_argument(*self.paramName,
                             nargs='?', choices=['version', 'sync', 'daemon',
                                                 'pair', 'firmware',
-                                                'interactive'],
+                                                'interactive', 'radar'],
                             help=self.helpText +
                             " (default to %s)" % self.default)
 
@@ -244,6 +244,7 @@ class Config(object):
                 StrParameter('rcConfigName', 'rcconfigname', ('-c', '--config'), None, True, "use alternative configuration file"),
                 StrParameter('dumpDir', 'dump-dir', ('--dump-dir',), "~/.galileo", False, "directory for storing dumps"),
                 IntParameter('daemonPeriod', 'daemon-period', ('--daemon-period',), 15000, False, "sleep time in msec between sync runs when in daemon mode"),
+                IntParameter('scanTrials', 'scan-trials', ('--scan-trials',), 10, False, "Number of trials to repeat scan in radar mode"),
                 SetParameter('includeTrackers', 'include', ('-I', '--include'), None, False, "list of tracker IDs to sync (all if not specified)"),
                 SetParameter('excludeTrackers', 'exclude', ('-X', '--exclude'), set(), False, "list of tracker IDs to not sync"),
                 LogLevelParameter(),

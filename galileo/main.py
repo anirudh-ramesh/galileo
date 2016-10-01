@@ -228,6 +228,33 @@ def daemon(config):
             goOn = False
 
 
+def radar(config):
+    logger.debug('%s initialising', os.path.basename(sys.argv[0]))
+    dongle = dgl.FitBitDongle(config.logSize)
+    if not dongle.setup():
+        logger.error("No dongle connected, aborting")
+        return
+
+    fitbit = FitbitClient(dongle)
+
+    galileo = GalileoClient('https', 'client.fitbit.com',
+                            'tracker/client/message')
+
+    if not fitbit.disconnect():
+        logger.error("Dirty state, not able to start synchronisation.")
+        fitbit.exhaust()
+        return
+
+    if not fitbit.getDongleInfo():
+        logger.warning('Failed to get connected Fitbit dongle information')
+
+    logger.info('Discovering trackers to synchronize')
+
+    for trial in range(0, config.scanTrials):
+        print('Trial ' + str(trial + 1))
+        for tracker in fitbit.discover(FitBitUUID):
+            print('Tracker Code: ' + a2x(tracker.id, ':') + '; Signal Strength: ' + str(tracker.RSSI) + ' dBm')
+
 def main():
     """ This is the entry point """
 
@@ -284,6 +311,7 @@ def main():
             'pair': Conversation('pair', ui),
             'firmware': Conversation('firmware', ui),
             'interactive': interactive.main,
+            'radar': radar,
         }[config.mode](config)
     except:
         logger.critical("# A serious error happened, which is probably due to a")
